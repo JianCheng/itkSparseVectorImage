@@ -14,8 +14,8 @@
  PURPOSE.  See the above copyright notices for more information.
 
  =========================================================================*/
-#ifndef __itkSparseVectorImageLinearInterpolateImageFunction_txx
-#define __itkSparseVectorImageLinearInterpolateImageFunction_txx
+#ifndef __itkSparseVectorImageLinearInterpolateImageFunction_hxx
+#define __itkSparseVectorImageLinearInterpolateImageFunction_hxx
 
 #include "itkSparseVectorImageLinearInterpolateImageFunction.h"
 
