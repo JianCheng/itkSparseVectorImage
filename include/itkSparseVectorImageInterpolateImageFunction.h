@@ -1,6 +1,15 @@
-
-/* This class was posted to the ITK users list by Karthik Krishnan
- * http://www.itk.org/pipermail/insight-users/2008-July/026542.html */
+/*=========================================================================
+ 
+ Program:   Sparse Vector Image Interpolate Image Function
+ 
+ Copyright (c) Pew-Thian Yap. All rights reserved.
+ See http://www.unc.edu/~ptyap/ for details.
+ 
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the above copyright notices for more information.
+ 
+ =========================================================================*/
 
 #ifndef __itkSparseVectorImageInterpolateImageFunction_h
 #define __itkSparseVectorImageInterpolateImageFunction_h
@@ -98,10 +107,7 @@ public:
       }
     augmentedPoint[0] = 0;
 
-//    OutputContinuousIndexType index;
-    //std::cout << "augmentedPoint before = " << augmentedPoint << std::endl; 
     this->GetInputImage()->TransformPhysicalPointToContinuousIndex( augmentedPoint, augmentedIndex );
-    //std::cout << "augmentedPoint after = " << augmentedPoint << std::endl; 
    
     for ( unsigned int dim=0; dim<ImageDimension-1; dim++ )
       {
@@ -137,27 +143,30 @@ public:
     * calling the method. */
   virtual OutputType EvaluateAtIndex( const IndexType & index ) const
     {
-    PixelType input = this->GetInputImage()->GetPixel( index );
-    OutputType output = static_cast<OutputType>( input );
-    return ( output );
+//    PixelType input = this->GetInputImage()->GetPixel( index );
+//    OutputType output = static_cast<OutputType>( input );
+//    return ( output );
+    return static_cast<OutputType>( this->GetInputImage()->GetPixel( index ) );
     }
 
   virtual VectorOutputType VectorEvaluateAtIndex( const VectorOutputIndexType & index ) const
     {
     RegionType region = this->GetInputImage()->GetLargestPossibleRegion();
     SizeType size = region.GetSize();
-    unsigned int VectorDimension = size[0];
+    unsigned int vectorDimension = size[0];
 
     IndexType augmentedIndex;
     for ( unsigned int dim=0; dim<ImageDimension-1; dim++ )
       {
       augmentedIndex[dim+1] = index[dim];
       }
+    augmentedIndex[0] = 0;
 
     VectorOutputType output;
+    output.SetSize( vectorDimension );
     output.Fill( 0 );
     
-    for ( unsigned int k=0; k<VectorDimension; k++ )
+    for ( unsigned int k=0; k<vectorDimension; k++ )
       {
       augmentedIndex[0] = k;
       PixelType input = this->GetInputImage()->GetPixel( augmentedIndex );

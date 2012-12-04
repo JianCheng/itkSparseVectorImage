@@ -1,19 +1,16 @@
 /*=========================================================================
-
- Program:   Insight Segmentation & Registration Toolkit
- Module:    $RCSfile: itkSparseVectorImageLinearInterpolateImageFunction.txx,v $
- Language:  C++
- Date:      $Date$
- Version:   $Revision$
-
- Copyright (c) Insight Software Consortium. All rights reserved.
- See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
-
+ 
+ Program:   Sparse Vector Image Linear Interpolate Image Function
+ 
+ Copyright (c) Pew-Thian Yap. All rights reserved.
+ See http://www.unc.edu/~ptyap/ for details.
+ 
  This software is distributed WITHOUT ANY WARRANTY; without even
  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  PURPOSE.  See the above copyright notices for more information.
-
+ 
  =========================================================================*/
+
 #ifndef __itkSparseVectorImageLinearInterpolateImageFunction_hxx
 #define __itkSparseVectorImageLinearInterpolateImageFunction_hxx
 
@@ -80,7 +77,7 @@ SparseVectorImageLinearInterpolateImageFunction<TInputImage, TCoordRep>::VectorE
 
   RegionType region = this->GetInputImage()->GetLargestPossibleRegion();
   SizeType size = region.GetSize();
-  unsigned int VectorDimension = size[0];
+  unsigned int vectorDimension = size[0];
 
   /**
    * Interpolated value is the weight some of each of the surrounding
@@ -89,7 +86,7 @@ SparseVectorImageLinearInterpolateImageFunction<TInputImage, TCoordRep>::VectorE
    */
   //OutputType output = static_cast<OutputType>( 0 );
   VectorOutputType output;
-  output.SetSize( VectorDimension );
+  output.SetSize( vectorDimension );
   output.Fill( 0.0 );
 
   PixelType input;
@@ -128,7 +125,7 @@ SparseVectorImageLinearInterpolateImageFunction<TInputImage, TCoordRep>::VectorE
       {
       if ( this->IsInsideBuffer( neighIndex ) )
         {
-        for ( unsigned int k = 0; k < VectorDimension; k++ )
+        for ( unsigned int k = 0; k < vectorDimension; k++ )
           {
           neighIndex[0] = k;
           input = this->GetInputImage()->GetPixel( neighIndex );

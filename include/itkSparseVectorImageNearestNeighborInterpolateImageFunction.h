@@ -1,6 +1,6 @@
 /*=========================================================================
  
- Program:   Sparse Vector Image Linear Interpolate Image Function
+ Program:   Sparse Vector Image Nearest Neighbor Interpolate Image Function
  
  Copyright (c) Pew-Thian Yap. All rights reserved.
  See http://www.unc.edu/~ptyap/ for details.
@@ -11,8 +11,8 @@
  
  =========================================================================*/
 
-#ifndef __itkSparseVectorImageLinearInterpolateImageFunction_h
-#define __itkSparseVectorImageLinearInterpolateImageFunction_h
+#ifndef __itkSparseVectorImageNearestNeighborInterpolateImageFunction_h
+#define __itkSparseVectorImageNearestNeighborInterpolateImageFunction_h
 
 #include "itkSparseVectorImageInterpolateImageFunction.h"
 
@@ -20,10 +20,10 @@ namespace itk
 {
 
 /** 
- * \class SparseVectorImageLinearInterpolateImageFunction
- * \brief Linearly interpolate a sparse vector image at specified positions.
+ * \class SparseVectorImageNearestNeighborInterpolateImageFunction
+ * \brief Nearest-neighbor interpolate a sparse vector image at specified positions.
  *
- * SparseVectorImageLinearInterpolateImageFunction linearly interpolates a vector
+ * SparseVectorImageNearestNeighborInterpolateImageFunction linearly interpolates a vector
  * image intensity non-integer pixel position. This class is templated
  * over the input image type and the coordinate representation type.
  *
@@ -36,24 +36,22 @@ namespace itk
  * 
  */
 template<class TInputImage, class TCoordRep = double>
-class ITK_EXPORT SparseVectorImageLinearInterpolateImageFunction : public SparseVectorImageInterpolateImageFunction<
+class ITK_EXPORT SparseVectorImageNearestNeighborInterpolateImageFunction : public SparseVectorImageInterpolateImageFunction<
     TInputImage, TCoordRep>
 {
 public:
   /** Standard class typedefs. */
-  typedef SparseVectorImageLinearInterpolateImageFunction Self;
+  typedef SparseVectorImageNearestNeighborInterpolateImageFunction Self;
   typedef SparseVectorImageInterpolateImageFunction<TInputImage, TCoordRep> Superclass;
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
-  ;
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SparseVectorImageLinearInterpolateImageFunction,
-      SparseVectorImageInterpolateImageFunction)
-  ;
+  itkTypeMacro(SparseVectorImageNearestNeighborInterpolateImageFunction,
+      SparseVectorImageInterpolateImageFunction);
 
   /** InputImageType typedef support. */
   typedef typename Superclass::InputImageType InputImageType;
@@ -69,6 +67,9 @@ public:
   /** Dimension underlying input image. */
   itkStaticConstMacro(ImageDimension, unsigned int,Superclass::ImageDimension);
 
+  /** Point typedef support. */
+  typedef typename Superclass::PointType PointType;
+  
   /** Index typedef support. */
   typedef typename Superclass::IndexType IndexType;
 
@@ -84,50 +85,76 @@ public:
   typedef typename Superclass::VectorOutputPointType VectorOutputPointType;
   typedef typename Superclass::VectorOutputContinuousIndexType VectorOutputContinuousIndexType;
 
-  /** Evaluate the function at a ContinuousIndex position
-   *
-   * Returns the linearly interpolated image intensity at a 
-   * specified point position. No bounds checking is done.
-   * The point is assume to lie within the image buffer.
-   *
-   * ImageFunction::IsInsideBuffer() can be used to check bounds before
-   * calling the method. */
+  virtual VectorOutputType VectorEvaluate( const VectorOutputPointType& point ) const
+  {
+  PointType augmentedPoint;
+  ContinuousIndexType augmentedIndex;
+  VectorOutputIndexType index;
+
+  for ( unsigned int dim=0; dim<ImageDimension-1; dim++ )
+    {
+    augmentedPoint[dim+1] = point[dim];
+    }
+  augmentedPoint[0] = 0;
+  
+  this->GetInputImage()->TransformPhysicalPointToContinuousIndex( augmentedPoint, augmentedIndex );
+
+  IndexType nnIndex;
+//  this->ConvertContinuousIndexToNearestIndex(augmentedIndex, nnIndex);
+  nnIndex.CopyWithRound(augmentedIndex);
+
+  for ( unsigned int dim=0; dim<ImageDimension-1; dim++ )
+    {
+    index[dim] = nnIndex[dim+1];
+    }
+  
+  VectorOutputType output = this->VectorEvaluateAtIndex( index );
+  
+  return ( output );
+  }
+
+  virtual OutputType Evaluate( const PointType& point ) const
+    {
+    ContinuousIndexType index;
+    
+    this->GetInputImage()->TransformPhysicalPointToContinuousIndex(
+      point, index );
+    
+    IndexType nnIndex;
+//    this->ConvertContinuousIndexToNearestIndex(cindex, nnIndex);
+    nnIndex.CopyWithRound(index);
+    
+    return ( this->EvaluateAtIndex( nnIndex ) );
+    }
+  
   virtual OutputType EvaluateAtContinuousIndex(
-      const ContinuousIndexType & index ) const;
+    const ContinuousIndexType & index ) const
+    {
+    IndexType nnIndex;
+    nnIndex.CopyWithRound(index);
+//    this->ConvertContinuousIndexToNearestIndex(index, nnIndex);
+    return ( this->EvaluateAtIndex(nnIndex) );
+    }
 
   virtual VectorOutputType VectorEvaluateAtContinuousIndex(
-      const VectorOutputContinuousIndexType & index ) const;
+      const VectorOutputContinuousIndexType & index ) const
+    {
+    VectorOutputIndexType nnIndex;
+    nnIndex.CopyWithRound(index);
+    return ( this->VectorEvaluateAtIndex( nnIndex ) );
+    }
 
 protected:
-  SparseVectorImageLinearInterpolateImageFunction();
-  ~SparseVectorImageLinearInterpolateImageFunction()
+  SparseVectorImageNearestNeighborInterpolateImageFunction() {};
+  ~SparseVectorImageNearestNeighborInterpolateImageFunction()
     {};
-  void PrintSelf(std::ostream& os, Indent indent) const;
 
 private:
-  SparseVectorImageLinearInterpolateImageFunction(const Self&); //purposely not implemented
+  SparseVectorImageNearestNeighborInterpolateImageFunction(const Self&); //purposely not implemented
   void operator=(const Self&);//purposely not implemented
-
-  /** Number of neighbors used in the interpolation */
-  static const unsigned long m_Neighbors;
 
 };
 
 } // end namespace itk
-
-// Define instantiation macro for this template.
-#define ITK_TEMPLATE_SparseVectorImageLinearInterpolateImageFunction(_, EXPORT, x, y) namespace itk { \
-  _(2(class EXPORT SparseVectorImageLinearInterpolateImageFunction< ITK_TEMPLATE_2 x >)) \
-  namespace Templates { typedef SparseVectorImageLinearInterpolateImageFunction< ITK_TEMPLATE_2 x > \
-                                                  SparseVectorImageLinearInterpolateImageFunction##y; } \
-  }
-
-#if ITK_TEMPLATE_EXPLICIT
-# include "Templates/itkSparseVectorImageLinearInterpolateImageFunction+-.h"
-#endif
-
-#if ITK_TEMPLATE_TXX
-# include "itkSparseVectorImageLinearInterpolateImageFunction.hxx"
-#endif
 
 #endif
