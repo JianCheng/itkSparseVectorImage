@@ -25,6 +25,7 @@ SparseVectorImage<TPixel, VImageDimension>
 ::SparseVectorImage()
 {
   m_Container = PixelContainer::New();
+  m_FillBufferValue.SetSize(0);
 }
 
 
@@ -134,6 +135,11 @@ SparseVectorImage< TPixel, VImageDimension >
 ::SetNumberOfComponentsPerPixel(unsigned int n)
 {
   this->SetVectorLength( static_cast< VectorLengthType >( n ) );
+  if ( m_FillBufferValue.GetNumberOfElements() == 0 )
+    {
+    m_FillBufferValue.SetSize(n);
+    m_FillBufferValue.Fill(0);
+    }
 }
   
 template<class TPixel, unsigned int VImageDimension>

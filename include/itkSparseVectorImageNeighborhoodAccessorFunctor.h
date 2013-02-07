@@ -41,8 +41,8 @@ public:
   typedef typename ImageType::PixelContainer::PixelMapType PixelMapType;
   typedef unsigned int                                     VectorLengthType;
 
-  typedef Neighborhood< InternalPixelType *,
-          ::itk::GetImageDimension< TImage >::ImageDimension> NeighborhoodType;
+  typedef Neighborhood< InternalPixelType *, TImage::ImageDimension>
+    NeighborhoodType;
 
   typedef ImageBoundaryCondition< ImageType > const 
                           *ImageBoundaryConditionConstPointerType;

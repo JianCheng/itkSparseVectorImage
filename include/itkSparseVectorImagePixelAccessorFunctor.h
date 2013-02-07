@@ -71,7 +71,6 @@ public:
   static void SetVectorLength( ImageType *image, VectorLengthType length)
     {
     image->SetVectorLength(length);
-
     }
 
   /** Required for some filters to compile. */

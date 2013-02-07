@@ -45,7 +45,8 @@ public:
 
   /** Internal typedef. It defines the internal real
    * representation of data. */
-  typedef VariableLengthVector<TType> InternalType;
+//  typedef VariableLengthVector<TType> InternalType;
+  typedef TType InternalType;
 
   /** Typedef for pixel map. */
   typedef TPixelMapType PixelMapType;
@@ -77,7 +78,7 @@ public:
       
       if ( it == m_PixelMap->end() )
         {
-        pixel[i] = m_FillBufferValue;
+        pixel[i] = m_FillBufferValue[i];
         }
       else
         {
@@ -101,7 +102,7 @@ public:
 
    /** Constructor to initialize slices and image size at construction time */
    SparseVectorImagePixelAccessor( PixelMapType* pixelMap,
-     TType fillBufferValue, VectorLengthType length)
+     ExternalType fillBufferValue, VectorLengthType length)
      {
      m_PixelMap = pixelMap;
      m_FillBufferValue = fillBufferValue;
@@ -112,7 +113,7 @@ public:
 
 private:
   PixelMapType* m_PixelMap;
-  InternalType m_FillBufferValue;
+  ExternalType m_FillBufferValue;
   VectorLengthType m_VectorLength;
 };
 
