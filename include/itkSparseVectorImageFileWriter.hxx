@@ -26,7 +26,7 @@ SparseVectorImageFileWriter<TInputImage>
 ::SparseVectorImageFileWriter()
 {
   m_FileName = "";
-  m_UseCompression = false;
+  m_UseCompression = true;
 //  m_UseInputMetaDataDictionary = true;
 }
 
@@ -115,8 +115,8 @@ SparseVectorImageFileWriter<TInputImage>
 //  InputImageSpacingType::SpacingType inputSpacing = input->GetSpacing();
   
   // Setup - Output Image
-  KeyImage = KeyImageType::New();
-  ValueImage = ValueImageType::New();
+  m_KeyImage = KeyImageType::New();
+  m_ValueImage = ValueImageType::New();
     
   KeyImageType::IndexType startIndex;
   KeyImageType::RegionType region;
@@ -139,24 +139,24 @@ SparseVectorImageFileWriter<TInputImage>
   region.SetIndex(startIndex);
   region.SetSize(size);
 
-  KeyImage->SetSpacing(spacing);
-  KeyImage->SetRegions(region);
-  ValueImage->SetSpacing(spacing);
-  ValueImage->SetRegions(region);
+  m_KeyImage->SetSpacing(spacing);
+  m_KeyImage->SetRegions(region);
+  m_ValueImage->SetSpacing(spacing);
+  m_ValueImage->SetRegions(region);
 
-  KeyImage->Allocate();
-  ValueImage->Allocate();
-  KeyImage->FillBuffer(static_cast<KeyType>(0));
-  ValueImage->FillBuffer(static_cast<InputImagePixelType>(0));  
+  m_KeyImage->Allocate();
+  m_ValueImage->Allocate();
+  m_KeyImage->FillBuffer(static_cast<KeyType>(0));
+  m_ValueImage->FillBuffer(static_cast<InputImagePixelType>(0));
 
   typedef itk::ImageRegionIterator< KeyImageType > KeyImageIteratorType;
   typedef itk::ImageRegionIterator< ValueImageType > ValueImageIteratorType;
   
-  KeyImageIteratorType KeyImageIterator( KeyImage, KeyImage->GetRequestedRegion() );
-  ValueImageIteratorType ValueImageIterator( ValueImage, ValueImage->GetRequestedRegion() );
+  KeyImageIteratorType keyImageIterator( m_KeyImage, m_KeyImage->GetRequestedRegion() );
+  ValueImageIteratorType valueImageIterator( m_ValueImage, m_ValueImage->GetRequestedRegion() );
   
-  KeyImageIterator.GoToBegin();
-  ValueImageIterator.GoToBegin();
+  keyImageIterator.GoToBegin();
+  valueImageIterator.GoToBegin();
 
   if ( pixelMap->size() > 0 )
     {
@@ -164,71 +164,72 @@ SparseVectorImageFileWriter<TInputImage>
     while ( iterator != pixelMap->end() )
       {
   //    std::cout << "first = " << iterator->first << std::endl;
-      KeyImageIterator.Set(static_cast<KeyType>(iterator->first));
+      keyImageIterator.Set(static_cast<KeyType>(iterator->first));
   //    std::cout << "second = " << iterator->second << std::endl;
-      ValueImageIterator.Set(iterator->second);
+      valueImageIterator.Set(iterator->second);
       ++iterator;
-      ++KeyImageIterator;
-      ++ValueImageIterator;
+      ++keyImageIterator;
+      ++valueImageIterator;
       }
     }
   else
     {
-    KeyImageIterator.Set(static_cast<KeyType>(0));
-    ValueImageIterator.Set(0);
+    keyImageIterator.Set(static_cast<KeyType>(0));
+    valueImageIterator.Set(0);
     }
   
   // Process File Names
-  std::string BaseFileName = "";
-  std::string FileNameExtension;
-  std::string DataFileNameExtension = "nrrd";
+  std::string baseFileName = "";
+  std::string fileNameExtension;
+  std::string dataFileNameExtension = "nrrd";
 
   std::string::size_type idx;
   idx = std::string(GetFileName()).find('.');
 
   if (idx != std::string::npos)
     {
-    FileNameExtension = std::string(GetFileName()).substr(idx + 1);
-    if (FileNameExtension != "spr")
+    fileNameExtension = std::string(GetFileName()).substr(idx + 1);
+    if (fileNameExtension != "spr")
       {
       std::cout << "Renaming extension to .spr" << std::endl;
-      FileNameExtension = "spr";
+      fileNameExtension = "spr";
       }
-    BaseFileName = std::string(GetFileName()).substr(0, idx);
+    baseFileName = std::string(GetFileName()).substr(0, idx);
     }
-  std::string KeyFileName = BaseFileName + "_key." + DataFileNameExtension;
-  std::string ValueFileName = BaseFileName + "_value." + DataFileNameExtension;
-  std::string HeaderFileName = BaseFileName + "." + FileNameExtension;
+  std::string keyFileName = baseFileName + "_key." + dataFileNameExtension;
+  std::string valueFileName = baseFileName + "_value." + dataFileNameExtension;
+  std::string headerFileName = baseFileName + "." + fileNameExtension;
   
   // Write Files
-  KeyImageFileWriter = KeyImageFileWriterType::New();
-  ValueImageFileWriter = ValueImageFileWriterType::New();
+  m_KeyImageFileWriter = KeyImageFileWriterType::New();
+  m_ValueImageFileWriter = ValueImageFileWriterType::New();
   
-  KeyImageFileWriter->SetFileName(KeyFileName);
-  KeyImageFileWriter->SetInput(KeyImage);
-  ValueImageFileWriter->SetFileName(ValueFileName);
-  ValueImageFileWriter->SetInput(ValueImage);
+  m_KeyImageFileWriter->SetFileName(keyFileName);
+  m_KeyImageFileWriter->SetInput(m_KeyImage);
+  m_ValueImageFileWriter->SetFileName(valueFileName);
+  m_ValueImageFileWriter->SetInput(m_ValueImage);
 
-  KeyImageFileWriter->SetUseCompression(this->m_UseCompression);
-  ValueImageFileWriter->SetUseCompression(this->m_UseCompression);
-//  KeyImageFileWriter->SetUseInputMetaDataDictionary(this->m_UseInputMetaDataDictionary);
-//  ValueImageFileWriter->SetUseInputMetaDataDictionary(this->m_UseInputMetaDataDictionary);  
+  m_KeyImageFileWriter->SetUseCompression(this->m_UseCompression);
+  m_ValueImageFileWriter->SetUseCompression(this->m_UseCompression);
+//  m_KeyImageFileWriter->SetUseInputMetaDataDictionary(this->m_UseInputMetaDataDictionary);
+//  m_ValueImageFileWriter->SetUseInputMetaDataDictionary(this->m_UseInputMetaDataDictionary);  
   
-  KeyImageFileWriter->Update();
-  ValueImageFileWriter->Update();
+  m_KeyImageFileWriter->Update();
+  m_ValueImageFileWriter->Update();
 
   // Write Header
   std::ofstream outfile;
 //  std::string HeaderFileName = GetHeaderFileName();
 //  std::cout << HeaderFileName << std::endl;
-  outfile.open(HeaderFileName.c_str(), std::fstream::out);
+  outfile.open(headerFileName.c_str(), std::fstream::out);
 
   InputImageRegionType outputRegion = input->GetLargestPossibleRegion();
   InputImageSizeType outputSize = outputRegion.GetSize();
   InputImageSpacingType outputSpacing = input->GetSpacing();
 
-  outfile << "NDims = " << input->GetImageDimension() << std::endl;
+  outfile << "NDims = " << input->GetImageDimension() + 1 << std::endl;
   outfile << "DimSize = ";
+  outfile << input->GetNumberOfComponentsPerPixel() << " ";
   for (unsigned int d=0; d<input->GetImageDimension(); d++)
     {
     outfile << outputSize[d] << " ";
@@ -242,8 +243,8 @@ SparseVectorImageFileWriter<TInputImage>
     }
   outfile << std::endl;
 
-  outfile << "KeyElementDataFile = " << KeyFileName << std::endl;
-  outfile << "ValueElementDataFile = " << ValueFileName << std::endl;
+  outfile << "KeyElementDataFile = " << keyFileName << std::endl;
+  outfile << "ValueElementDataFile = " << valueFileName << std::endl;
   
   outfile.close();
 }

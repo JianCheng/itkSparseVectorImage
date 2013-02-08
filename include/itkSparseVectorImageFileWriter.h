@@ -32,9 +32,9 @@ class ITK_EXPORT SparseVectorImageFileWriter : public ProcessObject
 public:
   /** Standard class typedefs. */
   typedef SparseVectorImageFileWriter     Self;
-  typedef ProcessObject             Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef ProcessObject                   Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -108,14 +108,14 @@ protected:
   typedef typename KeyImageType::Pointer KeyImagePointer;
   typedef typename ValueImageType::Pointer ValueImagePointer;
     
-  KeyImagePointer KeyImage;
-  ValueImagePointer ValueImage;
+  KeyImagePointer m_KeyImage;
+  ValueImagePointer m_ValueImage;
 
   typedef itk::ImageFileWriter<KeyImageType> KeyImageFileWriterType;
   typedef itk::ImageFileWriter<ValueImageType> ValueImageFileWriterType;
   
-  typename KeyImageFileWriterType::Pointer KeyImageFileWriter;
-  typename ValueImageFileWriterType::Pointer ValueImageFileWriter;
+  typename KeyImageFileWriterType::Pointer m_KeyImageFileWriter;
+  typename ValueImageFileWriterType::Pointer m_ValueImageFileWriter;
   
   /** Does the actual work. */
   void GenerateData(void);

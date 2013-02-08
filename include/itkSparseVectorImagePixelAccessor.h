@@ -60,7 +60,10 @@ public:
     
     for ( VectorLengthType i = 0; i < m_VectorLength; i++ )
       {
-      m_PixelMap->operator[](trueOffset + i) = input[i];;
+      if ( input[i] != 0 )
+        {
+        m_PixelMap->operator[](trueOffset + i) = input[i];
+        }
       }
     }
 

@@ -193,7 +193,10 @@ public:
     
     for ( VectorLengthType i = 0; i < m_VectorLength; i++ )
       {
-      map->operator[](offset + i) = value[i];
+      if ( value[i] != 0 )
+        {
+        map->operator[](offset + i) = value[i];
+        }
       }
     }
 

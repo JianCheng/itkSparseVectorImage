@@ -86,8 +86,8 @@ void SparseVectorImageFileReader<TOutputImage>
 {
   itkDebugMacro ( << "SparseVectorImageFileReader::GenerateData() \n" );
 
-  std::string KeyFileName;
-  std::string ValueFileName;
+  std::string keyFileName;
+  std::string valueFileName;
   char tempLine[256];
   
   // Read Header
@@ -102,7 +102,6 @@ void SparseVectorImageFileReader<TOutputImage>
   bool usePath = false;
   char pathName[255];
   usePath = this->GetFilePath( m_FileName.c_str(), pathName );
-
 
   std::string line, extractedLine;
 
@@ -190,11 +189,11 @@ void SparseVectorImageFileReader<TOutputImage>
           }
           const size_t endStr = extractedLine.find_last_not_of(" \t");
           const size_t range = endStr - beginStr + 1;
-          KeyFileName = extractedLine.substr(beginStr, range);
+          keyFileName = extractedLine.substr(beginStr, range);
 
           if ( usePath )
             {
-            KeyFileName = std::string(pathName) + KeyFileName;
+            keyFileName = std::string(pathName) + keyFileName;
             }
 
 //          sscanf(extractedLine.c_str(), "%s", tempLine);
@@ -213,11 +212,11 @@ void SparseVectorImageFileReader<TOutputImage>
            }
            const size_t endStr = extractedLine.find_last_not_of(" \t");
            const size_t range = endStr - beginStr + 1;
-           ValueFileName = extractedLine.substr(beginStr, range);
+           valueFileName = extractedLine.substr(beginStr, range);
            
           if ( usePath )
             {
-            ValueFileName = std::string(pathName) + ValueFileName;
+            valueFileName = std::string(pathName) + valueFileName;
             }
 
 //           sscanf(extractedLine.c_str(), "%s", tempLine);
@@ -256,36 +255,36 @@ void SparseVectorImageFileReader<TOutputImage>
   OutputImagePixelMapType * pixelMap = container->GetPixelMap();
 //  OutputImagePixelMapIteratorType iterator = pixelMap->begin();
   
-  KeyImageFileReader = KeyImageFileReaderType::New();
-  ValueImageFileReader = ValueImageFileReaderType::New();
+  m_KeyImageFileReader = KeyImageFileReaderType::New();
+  m_ValueImageFileReader = ValueImageFileReaderType::New();
   
-  KeyImageFileReader->SetFileName(KeyFileName);
-  ValueImageFileReader->SetFileName(ValueFileName);
+  m_KeyImageFileReader->SetFileName(keyFileName);
+  m_ValueImageFileReader->SetFileName(valueFileName);
   
-  KeyImageFileReader->Update();
-  ValueImageFileReader->Update();
+  m_KeyImageFileReader->Update();
+  m_ValueImageFileReader->Update();
   
-  KeyImage = KeyImageFileReader->GetOutput();
-  ValueImage = ValueImageFileReader->GetOutput();
+  m_KeyImage = m_KeyImageFileReader->GetOutput();
+  m_ValueImage = m_ValueImageFileReader->GetOutput();
   
-  m_ImageIO = ValueImageFileReader->GetImageIO();
+  m_ImageIO = m_ValueImageFileReader->GetImageIO();
   
   typedef ImageRegionIterator< KeyImageType > KeyImageIteratorType;
   typedef ImageRegionIterator< ValueImageType > ValueImageIteratorType;
   
-  KeyImageIteratorType KeyImageIterator( KeyImage, KeyImage->GetRequestedRegion() );
-  ValueImageIteratorType ValueImageIterator( ValueImage, ValueImage->GetRequestedRegion() );
+  KeyImageIteratorType keyImageIterator( m_KeyImage, m_KeyImage->GetRequestedRegion() );
+  ValueImageIteratorType valueImageIterator( m_ValueImage, m_ValueImage->GetRequestedRegion() );
   
-  KeyImageIterator.GoToBegin();
-  ValueImageIterator.GoToBegin();
+  keyImageIterator.GoToBegin();
+  valueImageIterator.GoToBegin();
 
   // Populate Data
-  while ( !KeyImageIterator.IsAtEnd() )
+  while ( !keyImageIterator.IsAtEnd() )
     {
-    pixelMap->operator[](KeyImageIterator.Get()) = ValueImageIterator.Get();
+    pixelMap->operator[](keyImageIterator.Get()) = valueImageIterator.Get();
 //    ++iterator;
-    ++KeyImageIterator;
-    ++ValueImageIterator;
+    ++keyImageIterator;
+    ++valueImageIterator;
     }
   
 }

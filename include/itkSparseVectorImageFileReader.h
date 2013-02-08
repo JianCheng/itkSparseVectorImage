@@ -119,14 +119,14 @@ protected:
   typedef Image<unsigned long, 1> KeyImageType;
   typedef Image<OutputImageInternalPixelType, 1> ValueImageType;
       
-  typename KeyImageType::Pointer KeyImage;
-  typename ValueImageType::Pointer ValueImage;
+  typename KeyImageType::Pointer m_KeyImage;
+  typename ValueImageType::Pointer m_ValueImage;
 
   typedef itk::ImageFileReader<KeyImageType> KeyImageFileReaderType;
   typedef itk::ImageFileReader<ValueImageType> ValueImageFileReaderType;
   
-  typename KeyImageFileReaderType::Pointer KeyImageFileReader;
-  typename ValueImageFileReaderType::Pointer ValueImageFileReader;
+  typename KeyImageFileReaderType::Pointer m_KeyImageFileReader;
+  typename ValueImageFileReaderType::Pointer m_ValueImageFileReader;
 
   /** Does the real work. */
   virtual void GenerateData();
