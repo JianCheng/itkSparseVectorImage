@@ -237,6 +237,7 @@ SparseVectorImageFileWriter<TInputImage>
   outfile << std::endl;
   
   outfile << "ElementSpacing = ";
+  outfile << "1" << " ";
   for (unsigned int d=0; d<input->GetImageDimension(); d++)
     {
     outfile << outputSpacing[d] << " ";
