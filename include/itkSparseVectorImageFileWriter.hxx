@@ -14,8 +14,9 @@
 #ifndef __itkSparseVectorImageFileWriter_hxx
 #define __itkSparseVectorImageFileWriter_hxx
 
-#include "itkSparseVectorImageFileWriter.h"
 #include <fstream>
+#include "itkSparseVectorImageFileWriter.h"
+#include "itksys/SystemTools.hxx"
 
 namespace itk
 {
@@ -183,18 +184,21 @@ SparseVectorImageFileWriter<TInputImage>
   std::string fileNameExtension;
   std::string dataFileNameExtension = "nrrd";
 
+  std::string fileName = itksys::SystemTools::GetFilenameName( m_FileName );
+  std::string pathName = itksys::SystemTools::GetFilenamePath( m_FileName );
+
   std::string::size_type idx;
-  idx = std::string(GetFileName()).find('.');
+  idx = fileName.find('.');
 
   if (idx != std::string::npos)
     {
-    fileNameExtension = std::string(GetFileName()).substr(idx + 1);
+    fileNameExtension = fileName.substr(idx + 1);
     if (fileNameExtension != "spr")
       {
       std::cout << "Renaming extension to .spr" << std::endl;
       fileNameExtension = "spr";
       }
-    baseFileName = std::string(GetFileName()).substr(0, idx);
+    baseFileName = fileName.substr(0, idx);
     }
   std::string keyFileName = baseFileName + "_key." + dataFileNameExtension;
   std::string valueFileName = baseFileName + "_value." + dataFileNameExtension;
@@ -204,9 +208,9 @@ SparseVectorImageFileWriter<TInputImage>
   m_KeyImageFileWriter = KeyImageFileWriterType::New();
   m_ValueImageFileWriter = ValueImageFileWriterType::New();
   
-  m_KeyImageFileWriter->SetFileName(keyFileName);
+  m_KeyImageFileWriter->SetFileName(pathName + "/" + keyFileName);
   m_KeyImageFileWriter->SetInput(m_KeyImage);
-  m_ValueImageFileWriter->SetFileName(valueFileName);
+  m_ValueImageFileWriter->SetFileName(pathName + "/" + valueFileName);
   m_ValueImageFileWriter->SetInput(m_ValueImage);
 
   m_KeyImageFileWriter->SetUseCompression(this->m_UseCompression);
@@ -221,7 +225,7 @@ SparseVectorImageFileWriter<TInputImage>
   std::ofstream outfile;
 //  std::string HeaderFileName = GetHeaderFileName();
 //  std::cout << HeaderFileName << std::endl;
-  outfile.open(headerFileName.c_str(), std::fstream::out);
+  outfile.open((pathName + "/" + headerFileName).c_str(), std::fstream::out);
 
   InputImageRegionType outputRegion = input->GetLargestPossibleRegion();
   InputImageSizeType outputSize = outputRegion.GetSize();

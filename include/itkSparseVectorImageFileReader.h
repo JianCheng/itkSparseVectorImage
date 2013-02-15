@@ -14,12 +14,12 @@
 #ifndef __itkSparseVectorImageFileReader_h
 #define __itkSparseVectorImageFileReader_h
 
-//#include "itkProcessObject.h"
 #include "itkExceptionObject.h"
 #include "itkImage.h"
 #include "itkImageSource.h"
 #include "itkImageIOBase.h"
 #include "itkImageFileReader.h"
+#include "itksys/SystemTools.hxx"
 
 namespace itk
 {
@@ -55,8 +55,6 @@ public:
 /** \class SparseVectorImageFileReader
  * \brief Reads sparse image data from key and value files.
  *
- */
-/** \class SparseVectorImageFileReader
  */
 template <class TOutputImage>
 class ITK_EXPORT SparseVectorImageFileReader : public ImageSource<TOutputImage>
@@ -131,19 +129,9 @@ protected:
   /** Does the real work. */
   virtual void GenerateData();
 
-//  ImageIOBase::Pointer m_ImageIO;
-//  bool                 m_UserSpecifiedImageIO; // keep track whether the
-                                               // ImageIO is user specified 
-
-//  std::string m_KeyFileName; // The key file to be read
-//  std::string m_ValueFileName; // The value file to be read
   std::string m_FileName;
-  
   bool m_UseStreaming;
-  
   ImageIOBase::Pointer m_ImageIO;
-
-  bool GetFilePath(const char *_fName, char *_fPath);
   
 private:
   SparseVectorImageFileReader(const Self&); //purposely not implemented

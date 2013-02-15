@@ -16,6 +16,7 @@
 
 #include "itkSparseVectorImageFileReader.h"
 #include "itkImageRegionIterator.h"
+#include "itksys/SystemTools.hxx"
 
 namespace itk
 {
@@ -56,31 +57,6 @@ void SparseVectorImageFileReader<TOutputImage>
 }
 
 template <class TOutputImage>
-bool SparseVectorImageFileReader<TOutputImage>
-::GetFilePath(const char *_fName, char *_fPath)
-{
-  long i;
-
-  size_t l = strlen(_fName);
-
-  for(i=(long)l-1; i>=0; i--)
-    if(_fName[i] == '\\' || _fName[i] == '/')
-      break;
-
-    if(i >= 0 && (_fName[i] == '/' || _fName[i] == '\\'))
-      {
-      strcpy(_fPath, _fName);
-      _fPath[i+1] = '\0';
-      return true;
-      }
-    else
-      {
-      _fPath[0] = '\0';
-      return false;
-      }
-}
-
-template <class TOutputImage>
 void SparseVectorImageFileReader<TOutputImage>
 ::GenerateData()
 {
@@ -99,9 +75,8 @@ void SparseVectorImageFileReader<TOutputImage>
     itkExceptionMacro( << "Cannot open file: " << m_FileName );
     }
       
-  bool usePath = false;
-  char pathName[255];
-  usePath = this->GetFilePath( m_FileName.c_str(), pathName );
+  std::string fileName = itksys::SystemTools::GetFilenameName( m_FileName );
+  std::string pathName = itksys::SystemTools::GetFilenamePath( m_FileName );
 
   std::string line, extractedLine;
 
@@ -132,16 +107,12 @@ void SparseVectorImageFileReader<TOutputImage>
           if (pch != NULL)
           {
             ndims = atoi(pch);
-//            pch = strtok (NULL, " ");
-          }      
-//          sscanf(extractedLine.c_str(), "%d", &ndims); 
+          }
         }
 
       if (line.find("DimSize") != std::string::npos)
         {
           extractedLine = line.substr(line.find("=") + 1);
-//          sscanf(extractedLine.c_str(), "%ld %ld %ld %ld", &outputSize[0], &outputSize[1],
-//              &outputSize[2], &outputSize[3]); 
           idx = 0;
           pch = strtok (const_cast<char*>(extractedLine.c_str())," ");
           while (pch != NULL)
@@ -162,8 +133,6 @@ void SparseVectorImageFileReader<TOutputImage>
       if (line.find("ElementSpacing") != std::string::npos)
         {
           extractedLine = line.substr(line.find("=") + 1);
-//          sscanf(extractedLine.c_str(), "%lf %lf %lf %lf", &outputSpacing[0], &outputSpacing[1],
-//              &outputSpacing[2], &outputSpacing[3]);
           idx = 0;
           pch = strtok (const_cast<char*>(extractedLine.c_str())," ");
           while (pch != NULL)
@@ -190,14 +159,7 @@ void SparseVectorImageFileReader<TOutputImage>
           const size_t endStr = extractedLine.find_last_not_of(" \t");
           const size_t range = endStr - beginStr + 1;
           keyFileName = extractedLine.substr(beginStr, range);
-
-          if ( usePath )
-            {
-            keyFileName = std::string(pathName) + keyFileName;
-            }
-
-//          sscanf(extractedLine.c_str(), "%s", tempLine);
-//          KeyFileName = extractedLine;
+          keyFileName = pathName + "/" + keyFileName;
         }
 
       if (line.find("ValueElementDataFile") != std::string::npos)
@@ -213,14 +175,7 @@ void SparseVectorImageFileReader<TOutputImage>
            const size_t endStr = extractedLine.find_last_not_of(" \t");
            const size_t range = endStr - beginStr + 1;
            valueFileName = extractedLine.substr(beginStr, range);
-           
-          if ( usePath )
-            {
-            valueFileName = std::string(pathName) + valueFileName;
-            }
-
-//           sscanf(extractedLine.c_str(), "%s", tempLine);
-//           ValueFileName = extractedLine;
+           valueFileName = pathName + "/" + valueFileName;
          }
       }
     else
@@ -253,7 +208,6 @@ void SparseVectorImageFileReader<TOutputImage>
 
   OutputImagePixelContainerType * container = output->GetPixelContainer();
   OutputImagePixelMapType * pixelMap = container->GetPixelMap();
-//  OutputImagePixelMapIteratorType iterator = pixelMap->begin();
   
   m_KeyImageFileReader = KeyImageFileReaderType::New();
   m_ValueImageFileReader = ValueImageFileReaderType::New();
@@ -282,7 +236,6 @@ void SparseVectorImageFileReader<TOutputImage>
   while ( !keyImageIterator.IsAtEnd() )
     {
     pixelMap->operator[](keyImageIterator.Get()) = valueImageIterator.Get();
-//    ++iterator;
     ++keyImageIterator;
     ++valueImageIterator;
     }
