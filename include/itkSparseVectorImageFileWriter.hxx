@@ -207,10 +207,21 @@ SparseVectorImageFileWriter<TInputImage>
   // Write Files
   m_KeyImageFileWriter = KeyImageFileWriterType::New();
   m_ValueImageFileWriter = ValueImageFileWriterType::New();
+
+  std::string keyPathName = keyFileName;
+  std::string valuePathName = valueFileName;
+  std::string headerPathName = headerFileName;
   
-  m_KeyImageFileWriter->SetFileName(pathName + "/" + keyFileName);
+  if ( pathName != "" )
+    {
+    keyPathName = pathName + "/" + keyFileName;
+    valuePathName = pathName + "/" + valueFileName;
+    headerPathName = pathName + "/" + headerFileName;
+    }
+  
+  m_KeyImageFileWriter->SetFileName(keyPathName);
   m_KeyImageFileWriter->SetInput(m_KeyImage);
-  m_ValueImageFileWriter->SetFileName(pathName + "/" + valueFileName);
+  m_ValueImageFileWriter->SetFileName(valuePathName);
   m_ValueImageFileWriter->SetInput(m_ValueImage);
 
   m_KeyImageFileWriter->SetUseCompression(this->m_UseCompression);
@@ -225,7 +236,8 @@ SparseVectorImageFileWriter<TInputImage>
   std::ofstream outfile;
 //  std::string HeaderFileName = GetHeaderFileName();
 //  std::cout << HeaderFileName << std::endl;
-  outfile.open((pathName + "/" + headerFileName).c_str(), std::fstream::out);
+  
+  outfile.open(headerPathName.c_str(), std::fstream::out);
 
   InputImageRegionType outputRegion = input->GetLargestPossibleRegion();
   InputImageSizeType outputSize = outputRegion.GetSize();

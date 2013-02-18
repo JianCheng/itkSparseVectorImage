@@ -159,7 +159,10 @@ void SparseVectorImageFileReader<TOutputImage>
           const size_t endStr = extractedLine.find_last_not_of(" \t");
           const size_t range = endStr - beginStr + 1;
           keyFileName = extractedLine.substr(beginStr, range);
-          keyFileName = pathName + "/" + keyFileName;
+          if ( pathName != "" )
+            {
+            keyFileName = pathName + "/" + keyFileName;
+            }
         }
 
       if (line.find("ValueElementDataFile") != std::string::npos)
@@ -175,7 +178,10 @@ void SparseVectorImageFileReader<TOutputImage>
            const size_t endStr = extractedLine.find_last_not_of(" \t");
            const size_t range = endStr - beginStr + 1;
            valueFileName = extractedLine.substr(beginStr, range);
-           valueFileName = pathName + "/" + valueFileName;
+           if ( pathName != "" )
+             {
+             valueFileName = pathName + "/" + valueFileName;
+             }
          }
       }
     else
