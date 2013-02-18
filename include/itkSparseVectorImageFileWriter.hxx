@@ -218,7 +218,7 @@ SparseVectorImageFileWriter<TInputImage>
     valuePathName = pathName + "/" + valueFileName;
     headerPathName = pathName + "/" + headerFileName;
     }
-  
+
   m_KeyImageFileWriter->SetFileName(keyPathName);
   m_KeyImageFileWriter->SetInput(m_KeyImage);
   m_ValueImageFileWriter->SetFileName(valuePathName);
