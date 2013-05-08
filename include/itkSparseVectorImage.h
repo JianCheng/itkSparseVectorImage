@@ -220,7 +220,7 @@ public:
       
       if ( it == map->end() )
         {
-        pixel[i] = m_FillBufferValue;
+        pixel[i] = m_FillBufferValue[i];
         }
       else
         {
@@ -238,7 +238,7 @@ public:
   PixelType GetPixel(const IndexType &index )
     {
     typename PixelContainer::PixelMapType *map = m_Container->GetPixelMap();
-    OffsetValueType offset = this->ComputeOffset(index);
+    OffsetValueType offset = m_VectorLength * this->ComputeOffset(index);
     
     PixelType pixel;
     pixel.SetSize(m_VectorLength);
@@ -254,7 +254,7 @@ public:
         }
       else
         {
-        pixel[i] = map->operator[](offset);
+        pixel[i] = map->operator[]( offset + i );
         }
       }
     
