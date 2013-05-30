@@ -1,22 +1,21 @@
 #include "itkImageFileWriter.h"
+#include "itkImageIOBase.h"
 #include "itkVectorImage.h"
 #include "itkSparseVectorImage.h"
 #include "itkSparseVectorImageFileReader.h"
-#include "itkSparseVectorImageFileWriter.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
-#include "itkImageFileWriter.h"
 
 
 inline void 
 PrintHelpInfo ( char* str )
 {
-  std::cout << str << ": convert a VectorImage to SparseVectorImage" << std::endl << std::flush;
+  std::cout << str << ": convert a SparseVectorImage to VectorImage" << std::endl << std::flush;
   std::cout << str << " inputImage outputImage" << std::endl << std::flush;
 }
 
 int
-itkVectorToSparseVectorImageTest(int argc, char *argv[])
+itkSparseVectorToVectorImageTest(int argc, char *argv[])
 {
   if (argc!=3)
     {
@@ -32,10 +31,10 @@ itkVectorToSparseVectorImageTest(int argc, char *argv[])
   typedef float PixelType;
   typedef itk::VectorImage<PixelType, 3> VectorImageType;
   typedef itk::SparseVectorImage<PixelType, 3> SparseVectorImageType;
-  typedef itk::ImageFileReader<VectorImageType> ReaderType;
+  typedef itk::SparseVectorImageFileReader<SparseVectorImageType> ReaderType;
 
-  VectorImageType::Pointer inputImage, outputImage;
-  SparseVectorImageType::Pointer sparseImage = SparseVectorImageType::New();
+  SparseVectorImageType::Pointer inputImage;
+  VectorImageType::Pointer vectorImage = VectorImageType::New();
   ReaderType::Pointer reader = ReaderType::New();
   
   // Read input image
@@ -55,37 +54,38 @@ itkVectorToSparseVectorImageTest(int argc, char *argv[])
   inputImage = reader->GetOutput();
   
   // Allocate output image
-  sparseImage->CopyInformation(inputImage);
-  sparseImage->SetRegions(inputImage->GetLargestPossibleRegion());
-  sparseImage->Allocate();
+  vectorImage->CopyInformation(inputImage);
+  vectorImage->SetRegions(inputImage->GetLargestPossibleRegion());
+  vectorImage->Allocate();
 
   // Iterator for the input image
-  itk::ImageRegionConstIterator<VectorImageType> inputIt(inputImage, inputImage->GetLargestPossibleRegion() );
+  itk::ImageRegionConstIterator<SparseVectorImageType> inputIt(inputImage, inputImage->GetLargestPossibleRegion() );
   
   // Iterator for the output image
-  itk::ImageRegionIterator<SparseVectorImageType> sparseIt(sparseImage, sparseImage->GetLargestPossibleRegion() );
+  itk::ImageRegionIterator<VectorImageType> outputIt(vectorImage, vectorImage->GetLargestPossibleRegion() );
 
   inputIt.GoToBegin();
-  sparseIt.GoToBegin();
+  outputIt.GoToBegin();
   
   // Transfer data
   while( !inputIt.IsAtEnd() )
     {
-    sparseIt.Set(inputIt.Get());
+    outputIt.Set(inputIt.Get());
     
     ++inputIt;
-    ++sparseIt;
+    ++outputIt;
     }
+
 
   
   // Write Output
   try
     {
-    typedef itk::SparseVectorImageFileWriter<SparseVectorImageType>  OutputImageWriterType;
+    typedef itk::ImageFileWriter<VectorImageType> OutputImageWriterType;
     OutputImageWriterType::Pointer writer = OutputImageWriterType::New(); 
     std::cout << "Writing file: " << _OutputFile << std::endl;
     writer->SetFileName( _OutputFile );
-    writer->SetInput( sparseImage );
+    writer->SetInput( vectorImage );
     writer->Update();
     }
   catch ( itk::ExceptionObject & err )
@@ -97,5 +97,3 @@ itkVectorToSparseVectorImageTest(int argc, char *argv[])
 
   return EXIT_SUCCESS;  
 }
-
-

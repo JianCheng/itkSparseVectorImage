@@ -11,12 +11,12 @@
 inline void 
 PrintHelpInfo ( char* str )
 {
-  std::cout << str << ": convert a VectorImage to SparseVectorImage" << std::endl << std::flush;
+  std::cout << str << ": convert a VectorImage to SparseVectorImage, then convert it back" << std::endl << std::flush;
   std::cout << str << " inputImage outputImage" << std::endl << std::flush;
 }
 
 int
-itkVectorToSparseVectorImageTest(int argc, char *argv[])
+itkVectorAndSparseVectorImageConvertorTest(int argc, char *argv[])
 {
   if (argc!=3)
     {
@@ -77,15 +77,37 @@ itkVectorToSparseVectorImageTest(int argc, char *argv[])
     ++sparseIt;
     }
 
+
+  // transfer SparseVectorImage to VectorImage
+  outputImage = VectorImageType::New();
+  outputImage->CopyInformation(sparseImage);
+  outputImage->SetRegions(sparseImage->GetLargestPossibleRegion());
+  outputImage->Allocate();
+
+  // Iterator for the output image
+  itk::ImageRegionIterator<VectorImageType> outputIt(outputImage, outputImage->GetLargestPossibleRegion() );
+
+  outputIt.GoToBegin();
+  sparseIt.GoToBegin();
+  
+  // Transfer data
+  while( !outputIt.IsAtEnd() )
+    {
+    outputIt.Set(sparseIt.Get());
+    
+    ++sparseIt;
+    ++outputIt;
+    }
+
   
   // Write Output
   try
     {
-    typedef itk::SparseVectorImageFileWriter<SparseVectorImageType>  OutputImageWriterType;
+    typedef itk::ImageFileWriter<VectorImageType> OutputImageWriterType;
     OutputImageWriterType::Pointer writer = OutputImageWriterType::New(); 
     std::cout << "Writing file: " << _OutputFile << std::endl;
     writer->SetFileName( _OutputFile );
-    writer->SetInput( sparseImage );
+    writer->SetInput( outputImage );
     writer->Update();
     }
   catch ( itk::ExceptionObject & err )
@@ -97,5 +119,6 @@ itkVectorToSparseVectorImageTest(int argc, char *argv[])
 
   return EXIT_SUCCESS;  
 }
+
 
 
