@@ -80,6 +80,7 @@ namespace itk
  *
  * \ingroup GeometricTransform MultiThreaded Streamed
  * \ingroup ITKImageGrid
+ * \ingroup ITKSparseVectorImage 
  *
  * \wiki
  * \wikiexample{Registration/WarpSparseVectorImageFilter,Warp one image to another using manually specified landmarks}

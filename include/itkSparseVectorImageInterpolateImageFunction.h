@@ -42,6 +42,7 @@ namespace itk
  * \sa InterpolateImageFunction
  * \ingroup ImageFunctions ImageInterpolators
  * \ingroup ITKImageFunction
+ * \ingroup ITKSparseVectorImage
  */
 template<typename TInputImage, typename TCoordRep = double>
 class ITK_EXPORT SparseVectorImageInterpolateImageFunction :

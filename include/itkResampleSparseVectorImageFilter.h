@@ -67,6 +67,7 @@ namespace itk
  *
  * \ingroup GeometricTransform
  * \ingroup ITKImageGrid
+ * \ingroup ITKSparseVectorImage
  *
  * \wiki
  * \wikiexample{SimpleOperations/TranslationTransform,Translate an image}

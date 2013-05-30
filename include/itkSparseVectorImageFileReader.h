@@ -27,6 +27,8 @@ namespace itk
 /** \class ImageFileReaderException
  *
  * \brief Base exception class for IO conflicts.
+ *
+ * \ingroup ITKSparseVectorImage
  */
 class SparseVectorImageFileReaderException : public ExceptionObject 
 {
@@ -54,6 +56,8 @@ public:
 
 /** \class SparseVectorImageFileReader
  * \brief Reads sparse image data from key and value files.
+ *
+ * \ingroup ITKSparseVectorImage 
  *
  */
 template <class TOutputImage>

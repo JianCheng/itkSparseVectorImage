@@ -40,8 +40,8 @@ namespace itk
  * \author Pei Zhang @ UNC-Chapel Hill
  *
  * \ingroup ImageFunctions ImageInterpolators
- *
  * \ingroup ITKImageFunction
+ * \ingroup ITKSparseVectorImage 
  * 
  */
 template<typename TInputImage, typename TCoordRep = double>

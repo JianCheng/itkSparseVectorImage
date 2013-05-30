@@ -24,6 +24,8 @@ namespace itk
 
 /** \class SparseVectorImageFileWriter
  * \brief Writes sparse vector image data to key and value files.
+ *  
+ *  \ingroup ITKSparseVectorImage
  *
  */
 template <class TInputImage>

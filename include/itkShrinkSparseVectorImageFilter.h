@@ -36,6 +36,7 @@ namespace itk
  * 
  * \ingroup GeometricTransform Streamed
  * \ingroup ITKImageGrid
+ * \ingroup ITKSparseVectorImage
  */
 template<class TInputImage, class TOutputImage>
 class ITK_EXPORT ShrinkSparseVectorImageFilter:

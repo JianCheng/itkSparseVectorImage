@@ -29,6 +29,8 @@ namespace itk
  * A typical user should not need to use this class. The class is internally
  * used by the neighborhood iterators.
  *
+ * \ingroup ITKSparseVectorImage
+ *
  */
 template< class TImage >
 class SparseVectorImageNeighborhoodAccessorFunctor

@@ -34,8 +34,9 @@ namespace itk
  *
  * The elements for this image are stored in a hash table,
  * catering for very large images with a small number of relevant pixels.
- *
  * The class is templated over the pixel type and image dimension.
+ *
+ * \ingroup ITKSparseVectorImage
  *
  */
 template <class TPixel, unsigned int VImageDimension>

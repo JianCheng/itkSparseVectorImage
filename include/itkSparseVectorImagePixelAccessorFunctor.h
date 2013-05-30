@@ -32,6 +32,8 @@ namespace itk
  * \sa DefaultPixelAccessor
  * \sa DefaultPixelAccessorFunctor
  *
+ * \ingroup ITKSparseVectorImage
+ *
  */
 template <class TImageType >
 class ITK_EXPORT SparseVectorImagePixelAccessorFunctor

@@ -33,6 +33,8 @@ namespace itk
  * customized convertion between the internal and external
  * type representations.
  *
+ * \ingroup ITKSparseVectorImage 
+ *
  */
 template <class TType, class TPixelMapType>
 class ITK_EXPORT SparseVectorImagePixelAccessor

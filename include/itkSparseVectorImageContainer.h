@@ -25,6 +25,8 @@ namespace itk
 /** \class SparseVectorImageContainer
  *  \brief An image container for itk::SparseVectorImage.
  *
+ *  \ingroup ITKSparseVectorImage
+ *
  */
 
 template <typename TElementIdentifier, typename TElement>
