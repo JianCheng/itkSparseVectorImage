@@ -14,6 +14,8 @@
 #ifndef __itkSparseVectorImagePixelAccessorFunctor_h
 #define __itkSparseVectorImagePixelAccessorFunctor_h
 
+#include "itkMacro.h"
+
 namespace itk
 {
 /** \class SparseVectorImagePixelAccessorFunctor
