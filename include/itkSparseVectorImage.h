@@ -30,7 +30,7 @@ namespace itk
 {
 
 /** \class SparseVectorImage
- *  \brief An n-dimensional vector image with a sparse memory model.
+ * \brief An n-dimensional vector image with a sparse memory model.
  *
  * The elements for this image are stored in a hash table,
  * catering for very large images with a small number of relevant pixels.
